@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rock Paper Scissors</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f0f1a;
+      color: #e8e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 1.25rem;
+      color: #c9b8ff;
+    }
+
+    .game-wrap {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    .score-card {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      border: 0.5px solid #2e2e50;
+    }
+    .score-label { font-size: 12px; color: #8888aa; margin-bottom: 4px; }
+    .score-val   { font-size: 30px; font-weight: 600; color: #c9b8ff; }
+    .vs-badge    { font-size: 13px; font-weight: 500; color: #8888aa; text-align: center; }
+
+    .arena {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #1a1a2e;
+      border-radius: 12px;
+      border: 0.5px solid #2e2e50;
+      padding: 1.5rem 1rem;
+      margin-bottom: 1rem;
+      min-height: 130px;
+    }
+    .fighter { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 120px; }
+    .fighter-label { font-size: 12px; color: #8888aa; }
+    .hand-icon { font-size: 56px; line-height: 1; display: block; }
+    .hand-icon.bounce { animation: bounce 0.4s ease; }
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.35); }
+      70%  { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+
+    .result-banner {
+      text-align: center;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 15px;
+      font-weight: 500;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    .result-idle { background: #1a1a2e; color: #8888aa; border: 0.5px solid #2e2e50; }
+    .result-win  { background: #0e2a1a; color: #5dd88a; border: 0.5px solid #2a7a4a; }
+    .result-lose { background: #2a0e0e; color: #f07070; border: 0.5px solid #7a2a2a; }
+    .result-draw { background: #2a1e00; color: #f0b840; border: 0.5px solid #7a5500; }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    .choice-btn {
+      background: #1a1a2e;
+      border: 0.5px solid #2e2e50;
+      border-radius: 12px;
+      padding: 0.85rem 0.5rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.1s, border-color 0.15s;
+      color: #e8e8f0;
+    }
+    .choice-btn:hover   { background: #23233a; border-color: #9b85e8; }
+    .choice-btn:active  { transform: scale(0.96); }
+    .choice-btn.selected { border: 2px solid #9b85e8; background: #221e3a; }
+    .choice-emoji { font-size: 32px; line-height: 1; }
+    .choice-name  { font-size: 12px; color: #8888aa; font-weight: 500; }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #8888aa;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 3px 12px;
+      border: 0.5px solid #2e2e50;
+    }
+
+    .reset-btn {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.6rem;
+      font-size: 13px;
+      color: #8888aa;
+      background: transparent;
+      border: 0.5px solid #2e2e50;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .reset-btn:hover { background: #1a1a2e; color: #c9b8ff; }
+  </style>
+</head>
+<body>
+
+<div class="game-wrap">
+  <h1>🎮 Rock · Paper · Scissors</h1>
+
+  <div class="scoreboard">
+    <div class="score-card">
+      <div class="score-label">You</div>
+      <div class="score-val" id="p-score">0</div>
+    </div>
+    <div class="vs-badge">vs</div>
+    <div class="score-card">
+      <div class="score-label">AI</div>
+      <div class="score-val" id="ai-score">0</div>
+    </div>
+  </div>
+
+  <div class="arena">
+    <div class="fighter">
+      <span class="hand-icon" id="p-hand">🤜</span>
+      <span class="fighter-label">You</span>
+    </div>
+    <div style="font-size:20px; color:#8888aa;">⚡</div>
+    <div class="fighter">
+      <span class="hand-icon" id="ai-hand">🤛</span>
+      <span class="fighter-label">AI</span>
+    </div>
+  </div>
+
+  <div class="result-banner result-idle" id="result-banner">
+    Pick your move below
+  </div>
+
+  <div class="choices">
+    <button class="choice-btn" onclick="play('rock')" id="btn-rock">
+      <span class="choice-emoji">🪨</span>
+      <span class="choice-name">Rock</span>
+    </button>
+    <button class="choice-btn" onclick="play('paper')" id="btn-paper">
+      <span class="choice-emoji">📄</span>
+      <span class="choice-name">Paper</span>
+    </button>
+    <button class="choice-btn" onclick="play('scissors')" id="btn-scissors">
+      <span class="choice-emoji">✂️</span>
+      <span class="choice-name">Scissors</span>
+    </button>
+  </div>
+
+  <div class="stats-row">
+    <span class="stat-pill" id="stat-rounds">Round 0</span>
+    <span class="stat-pill" id="stat-draws">Draws: 0</span>
+    <span class="stat-pill" id="stat-streak">Streak: 0</span>
+  </div>
+
+  <button class="reset-btn" onclick="resetGame()">↺ Reset Game</button>
+</div>
+
+<script>
+  const choices = ['rock', 'paper', 'scissors'];
+  const emojis  = { rock: '🪨', paper: '📄', scissors: '✂️' };
+  const beats   = { rock: 'scissors', paper: 'rock', scissors: 'paper' };
+
+  let pScore = 0, aiScore = 0, draws = 0, rounds = 0, streak = 0;
+
+  function play(pChoice) {
+    const aiChoice = choices[Math.floor(Math.random() * 3)];
+    rounds++;
+
+    document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('btn-' + pChoice).classList.add('selected');
+
+    const pHand  = document.getElementById('p-hand');
+    const aiHand = document.getElementById('ai-hand');
+    pHand.textContent  = emojis[pChoice];
+    aiHand.textContent = emojis[aiChoice];
+
+    [pHand, aiHand].forEach(el => {
+      el.classList.remove('bounce');
+      void el.offsetWidth;
+      el.classList.add('bounce');
+    });
+
+    const banner = document.getElementById('result-banner');
+    banner.className = 'result-banner';
+    let msg = '', cls = '';
+
+    if (pChoice === aiChoice) {
+      msg = "🤝 It's a draw! Try again.";
+      cls = 'result-draw';
+      draws++;
+      streak = 0;
+    } else if (beats[pChoice] === aiChoice) {
+      streak++;
+      msg = streak > 1 ? `🏆 You win! ${streak} in a row!` : '🏆 You win!';
+      cls = 'result-win';
+      pScore++;
+    } else {
+      streak = 0;
+      msg = '💀 AI wins this round!';
+      cls = 'result-lose';
+      aiScore++;
+    }
+
+    banner.classList.add(cls);
+    banner.textContent = msg;
+
+    document.getElementById('p-score').textContent     = pScore;
+    document.getElementById('ai-score').textContent    = aiScore;
+    document.getElementById('stat-rounds').textContent = 'Round ' + rounds;
+    document.getElementById('stat-draws').textContent  = 'Draws: ' + draws;
+    document.getElementById('stat-streak').textContent = 'Streak: ' + streak;
+  }
+
+  function resetGame() {
+    pScore = aiScore = draws = rounds = streak = 0;
+    document.getElementById('p-score').textContent     = '0';
+    document.getElementById('ai-score').textContent    = '0';
+    document.getElementById('stat-rounds').textContent = 'Round 0';
+    document.getElementById('stat-draws').textContent  = 'Draws: 0';
+    document.getElementById('stat-streak').textContent = 'Streak: 0';
+    document.getElementById('p-hand').textContent      = '🤜';
+    document.getElementById('ai-hand').textContent     = '🤛';
+    document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+    const banner = document.getElementById('result-banner');
+    banner.className   = 'result-banner result-idle';
+    banner.textContent = 'Pick your move below';
+  }
+</script>
+
+</body>
+</html>
