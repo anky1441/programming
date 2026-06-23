@@ -1,4 +1,4 @@
-## EDYTRACK-STUDENT MANAGEMENT SYSTEM BUILT WITH PYTHON ANS STREAMLIT
+## SOME PROJECTS USING PYTHON
 ## 🎓 EduTrack - Student Management System
 A full-featured school management app built with Python & Streamlit.
 Features: Student records, Teacher management, Grade tracking, Dashboard
