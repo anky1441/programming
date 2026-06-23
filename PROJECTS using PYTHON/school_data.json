@@ -1,0 +1,23 @@
+{
+    "students": [
+        {
+            "name": "Ankit Srivastva",
+            "roll_no": 1,
+            "age": 18,
+            "email": "ankitsrivastva1441@gmail.com",
+            "grades": {
+                "maths": 98,
+                "C language": 88
+            }
+        }
+    ],
+    "teachers": [
+        {
+            "name": "DR Anand Tyagi",
+            "email": "anandtyagi@gmail.com",
+            "emp_id": 345,
+            "age": 55,
+            "subject": "MATHS"
+        }
+    ]
+}

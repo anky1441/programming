@@ -110,9 +110,9 @@
 # else:
 #     print("given string",n,"is not a pallindrome")
 # n=input("enter the string->>>")
-digit=0
-alpha=0
-symbol=0
+# digit=0
+# alpha=0
+# symbol=0
 # for i in n:
 #     if i.isdigit():
 #         digit=digit+1
